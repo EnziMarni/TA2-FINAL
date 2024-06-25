@@ -7,6 +7,7 @@
             <a class="nav-link" id="v-pills-home-tab" href="{{ route('home') }}" role="tab" aria-controls="v-pills-home" aria-selected="true">Home</a>
             <a class="nav-link" id="v-pills-profile-tab" href="{{ route('input-dokumen') }}" role="tab" aria-controls="v-pills-profile" aria-selected="false">Input Dokumen</a>
             <a class="nav-link active" id="v-pills-messages-tab" href="{{ route('list-dokumen') }}" role="tab" aria-controls="v-pills-messages" aria-selected="false">List Dokumen</a>
+            <a class="nav-link" id="v-pills-messages-tab" href="{{ route('list-dokumen-user') }}" role="tab" aria-controls="v-pills-messages" aria-selected="false">Dokumen Saya</a>
             <a class="nav-link" id="v-pills-messages-tab" href="{{ route('draft-dokumen') }}" role="tab" aria-controls="v-pills-messages" aria-selected="false">Deleted Dokumen</a>
             @if(auth()->check() && auth()->user()->approved && (auth()->user()->jabatan === 'Admin' || auth()->user()->jabatan === 'Kaprodi'))
         <a class="nav-link" id="v-pills-messages-tab" href="{{ route('list-user') }}" role="tab" aria-controls="v-pills-messages" aria-selected="false">List User</a>
@@ -86,7 +87,22 @@
                             <input type="text" id="tags" name="tags" data-role="tagsinput" class="form-control" value="{{ $document->tags }}" placeholder="Add tags">
                         </div>
                     </div>
-                    
+
+                    <div class="form-label">
+                        <div>
+                            <label for="permissions">Izinkan siapa saja yang melihat:</label>
+                        </div>
+                        <div>
+                            @foreach(['all' => 'All', 'kajur' => 'Kajur', 'sekjur' => 'Sekjur', 'kaprodi' => 'Kaprodi', 'dosen' => 'Dosen', 'adm' => 'Adm', 'mahasiswa' => 'Mahasiswa'] as $key => $label)
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="{{ $key }}" name="permissions[]" value="{{ $key }}"
+                                        {{ in_array($key, explode(',', $document->view ?? '')) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="{{ $key }}">{{ $label }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary" style="margin-left:200px">Update</button>
                     <button href="{{ route('list-dokumen') }}" class="btn btn-secondary" style="margin-left:10px">Cancel</button>
                 </form>

@@ -41,7 +41,7 @@ class DokumenController extends Controller
         $fileName = str_replace(' ', '_', $request->dokumen_file->getClientOriginalName());
         $path = $request->dokumen_file->storeAs('public/documents', $fileName);
           // Mengambil dan menggabungkan permissions menjadi string yang dipisahkan oleh koma
-          $permissions = implode(',', $request->input('permissions', []));
+        $permissions = implode(',', $request->input('permissions', []));
 
           $user = Auth::user();
           if (!$user) {
@@ -101,6 +101,7 @@ class DokumenController extends Controller
             'dokumen_file' => $document->dokumen_file,
             'tags' => $document->tags,
             'created_by' =>$document->created_by,
+            'view' => $document->view,
         ]);
     
         $validatedData = $request->validate([
@@ -112,6 +113,7 @@ class DokumenController extends Controller
             'edit_dokumen_file' => 'nullable|file|mimes:pdf,docx,jpeg,png,jpg|max:2048',
             'tags' => 'nullable|string',
             'created_by' => 'nullable|string',
+            'view' => 'array',
         ]);
         // Handle file yang diunggah
         if ($request->hasFile('edit_dokumen_file')) {
@@ -127,7 +129,8 @@ class DokumenController extends Controller
 
          // Menggabungkan nilai checkbox menjadi string terpisah koma
          $viewPermissions = implode(',', $request->permissions ?? []);
-        
+         $document->view = $viewPermissions;
+
         $user = Auth::user();
         if (!$user) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -140,6 +143,7 @@ class DokumenController extends Controller
         $document->tahun_dokumen = $validatedData['tahun_dokumen'];
         $document->tags = $validatedData['tags'] ?? null;
         $document->created_by = $validatedData['created_by'] ?? $user->name;
+
         $document->save();
     
         Log::info('Document after update', ['document' => $document]);
@@ -190,7 +194,7 @@ class DokumenController extends Controller
     public function history($id)
     {
         $dokumen = Dokumen::findOrFail($id);
-        $histories = $dokumen->histories()->orderBy('created_at', 'desc')->get(['id', 'judul_dokumen', 'deskripsi_dokumen', 'kategori_dokumen', 'validasi_dokumen', 'tahun_dokumen', 'dokumen_file', 'tags', 'created_by', 'created_at']);
+        $histories = $dokumen->histories()->orderBy('created_at', 'desc')->get(['id', 'judul_dokumen', 'deskripsi_dokumen', 'kategori_dokumen', 'validasi_dokumen', 'tahun_dokumen', 'dokumen_file', 'tags', 'created_by', 'created_at','view',]);
 
         return view('history', compact('dokumen', 'histories'));
     }
