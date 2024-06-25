@@ -65,6 +65,7 @@
             <th scope="col" style="width: 5rem;">Tahun</th>
             <th scope="col">File</th>
             <th scope="col">Tags</th>
+            <th scope="col" style="width: 7.5rem;">Aksi</th>
             <th scope="col" style="width: 7.5rem;">View</th>
         </tr>
     </thead>
@@ -128,6 +129,14 @@
                         </a>
                     </td>
                     <td>{{ $document->tags }}</td>
+                    <td>
+                    <a href="{{ asset('storage/documents/' . $document->dokumen_file) }}" class="btn btn-link p-0" style="display: inline-block;margin-right: 0.3rem" download>
+                        <i class="fa fa-download"></i>
+                    </a>
+                    <a href="{{ route('dokumen.history', $document->id) }}" class="btn btn-link p-0" style="display: inline-block;margin-right: 0.3rem">
+                        <i class="fa fa-history" aria-hidden="true" style="color: blue;"></i>
+                    </a>
+                </td>
                     <td>
                     {{ $document->view }}
                     </td>

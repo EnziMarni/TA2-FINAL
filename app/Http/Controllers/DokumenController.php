@@ -35,19 +35,18 @@ class DokumenController extends Controller
             'dokumen_file' => 'required|file|mimes:pdf,docx,jpeg,png,jpg|max:2048',
             'tags' => 'nullable|string',
             'created_by' => 'nullable|string',
+            'permissions' => 'array',
         ]);
 
         $fileName = str_replace(' ', '_', $request->dokumen_file->getClientOriginalName());
         $path = $request->dokumen_file->storeAs('public/documents', $fileName);
-        
-        // Logging path
-        Log::info('File stored at: ' . $path);
-        
-        // Ambil pengguna yang sedang login
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
-        }
+          // Mengambil dan menggabungkan permissions menjadi string yang dipisahkan oleh koma
+          $permissions = implode(',', $request->input('permissions', []));
+
+          $user = Auth::user();
+          if (!$user) {
+              return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+          }
 
         // Buat dokumen dengan nilai created_by yang sesuai
         $dokumen = Dokumen::create([
@@ -58,6 +57,7 @@ class DokumenController extends Controller
             'tahun_dokumen' => $validatedData['tahun_dokumen'],
             'dokumen_file' => $fileName,
             'tags' => $validatedData['tags'] ?? null,
+            'view' => $permissions, // Simpan permissions di kolom view
             'status' => 'active',
             'created_by' => $validatedData['created_by'] ?? $user->name, // Menggunakan nama pengguna yang sedang login jika tidak ada created_by
         ]);
@@ -124,6 +124,9 @@ class DokumenController extends Controller
             $path = $request->edit_dokumen_file->storeAs('public/documents', $fileName);
             $document->dokumen_file = $fileName;
         }
+
+         // Menggabungkan nilai checkbox menjadi string terpisah koma
+         $viewPermissions = implode(',', $request->permissions ?? []);
         
         $user = Auth::user();
         if (!$user) {
@@ -143,8 +146,6 @@ class DokumenController extends Controller
 
         return redirect()->route('list-dokumen')->with('success', 'Details dokumen berhasil diperbarui.');
     }
-    
-
 
     public function moveToDraft($id)
     {
@@ -189,7 +190,7 @@ class DokumenController extends Controller
     public function history($id)
     {
         $dokumen = Dokumen::findOrFail($id);
-        $histories = $dokumen->histories()->orderBy('created_at', 'desc')->get();
+        $histories = $dokumen->histories()->orderBy('created_at', 'desc')->get(['id', 'judul_dokumen', 'deskripsi_dokumen', 'kategori_dokumen', 'validasi_dokumen', 'tahun_dokumen', 'dokumen_file', 'tags', 'created_by', 'created_at']);
 
         return view('history', compact('dokumen', 'histories'));
     }

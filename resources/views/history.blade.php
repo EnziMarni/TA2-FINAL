@@ -42,6 +42,7 @@
                                     <th scope="col">File</th>
                                     <th scope="col">Tags</th>
                                     <th scope="col">Tanggal Diubah</th>
+                                    <th scope="col">Dibuat Oleh</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,7 +59,8 @@
                                                     <i class="fa fa-file"></i>
                                                 </a>
                                         <td>{{ $history->tags }}</td>
-                                        <td>{{ $history->created_at }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($history->created_at)->setTimezone('Asia/Jakarta')->format('Y-m-d H:i:s') }}</td>
+                                        <td>{{ $history->created_by }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

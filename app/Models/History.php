@@ -9,7 +9,7 @@ class History extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'dokumen_id', 'judul_dokumen', 'deskripsi_dokumen', 'kategori_dokumen', 'validasi_dokumen', 'tahun_dokumen', 'dokumen_file', 'tags'
+        'dokumen_id', 'judul_dokumen', 'deskripsi_dokumen', 'kategori_dokumen', 'validasi_dokumen', 'tahun_dokumen', 'dokumen_file', 'tags', 'created_by',
     ];
 
     public function dokumen()
